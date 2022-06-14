@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <title>First Dapp</title>
+</head>
+
+<body>
+
+    <div>
+        <h1>Ethereum Secret Manager</h1>
+        <hr />
+        <label for="message">The sites writes a secret message to the Ethereum blockchain!</label>
+        <input type="text" id="userInput">
+        <button id="setMessageButton">Set Secret Message</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+
+        window.ethereum.enable();
+
+        if (typeof web3 !== 'undefined') {
+            // The following basically asking if the user has a metamask account.
+            console.log('Web3 found');
+            web3 = new Web3(web3.currentProvider);
+        }
+        else {
+            console.log('Web3 Is Not Found. Switching to the local network.');
+            web3 = new Web3(new Web3.providers.HttpProvider('HTTP://127.0.0.1:7545'));
+        }
+
+        const contractABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "message",
+                        "type": "string"
+                    }
+                ],
+                "name": "setMessage",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getMessage",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        const contractAddress = "0xc555961e2e7E6d4CA23fa349c832bf5800be2781";
+        const senderAccount = "0x89DA6d2C3B1893f0eD35C1cbf9BE2AE820eC4Adf";
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+        const remixContract = new web3.eth.Contract(contractABI, contractAddress);
+        remixContract.defaultAccount = senderAccount;
+
+        const userInput = document.getElementById('userInput');
+        const setMessageButton = document.getElementById('setMessageButton');
+        setMessageButton.addEventListener('click', () => {
+            const input = userInput.value;
+            // console.log(input);            
+            remixContract.methods.setMessage(input).send({ from: remixContract.defaultAccount });
+            remixContract.methods.getMessage().call((err, message) => console.log('Message:', message));
+        });
+
+    </script>
+</body>
+
+</html>
