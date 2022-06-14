@@ -24,10 +24,11 @@
 
     <script>
 
+        // To enable the access to Metaface.
         window.ethereum.enable();
 
         if (typeof web3 !== 'undefined') {
-            // The following basically asking if the user has a metamask account.
+            // The following basically asking if the web3 is injected into the page or not.
             console.log('Web3 found');
             web3 = new Web3(web3.currentProvider);
         }
